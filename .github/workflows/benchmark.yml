@@ -33,7 +33,7 @@ jobs:
           PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
 
           # Get the benchmark result from the JSON file
-          EXECUTION_TIME=$(jq -r '.[0].time |> .min' results.json)
+          EXECUTION_TIME=$(jq -r '.benchmark_results[0].time' results.json)
 
           # Append the benchmark result to the leaderboard.md
           echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> leaderboard.md
