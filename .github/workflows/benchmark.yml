@@ -55,9 +55,15 @@ jobs:
           # Apply the stashed changes
           git stash pop
           
-          # Commit the stashed changes if any
-          git add leaderboard.md results.json
-          git diff --exit-code || git commit -m "Apply benchmark results from PR #$PR_NUMBER"
+          # Resolve merge conflicts if any
+          if git ls-files -u | grep -q results.json; then
+            echo "Merge conflict detected in results.json. Resolving..."
+            # Resolve the conflict (this is a simple example, adjust as needed)
+            jq -s '.[0] * .[1]' results.json results.json > results_merged.json
+            mv results_merged.json results.json
+            git add results.json
+            git commit -m "Resolve merge conflict in results.json"
+          fi
           
           # Push the changes to the main branch
           git push origin main
