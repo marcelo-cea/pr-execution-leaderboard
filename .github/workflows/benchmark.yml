@@ -42,6 +42,9 @@ jobs:
           git add leaderboard.md
           git diff --exit-code leaderboard.md || git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
           
+          # Discard changes in results.json
+          git checkout -- results.json
+          
           # Stash any uncommitted changes
           git stash --include-untracked
           
