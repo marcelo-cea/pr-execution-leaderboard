@@ -29,19 +29,21 @@ jobs:
         
           # Get the PR number from the GitHub context
           PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
-
+      
           # Get the benchmark result from the JSON file
           EXECUTION_TIME=$(jq -r '.benchmark_results[0].time' results.json)
-
+      
           # Append the benchmark result to the leaderboard.md
           echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> leaderboard.md
-
+      
           # Commit the updated leaderboard.md if it was modified
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add leaderboard.md
           git diff --exit-code leaderboard.md || git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
-          git push
-
+          
+          # Push the changes to the current branch
+          git push origin HEAD:$(jq -r '.pull_request.head.ref' "$GITHUB_EVENT_PATH")
+      
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
