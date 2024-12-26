@@ -26,41 +26,30 @@ jobs:
 
       - name: Commit leaderboard update
         run: |
-        
           # Get the PR number from the GitHub context
           PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
-      
+          
           # Get the benchmark result from the JSON file
           EXECUTION_TIME=$(jq -r '.benchmark_results[0].time' results.json)
-      
+          
           # Append the benchmark result to the leaderboard.md
           echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> leaderboard.md
-      
-          # Commit the updated leaderboard.md if it was modified
+          
+          # Configure Git
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          
+          # Stage and commit changes to leaderboard.md
           git add leaderboard.md
-          git diff --exit-code leaderboard.md || git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
+          git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
           
-          # Stash any uncommitted changes
-          git stash --include-untracked
+          # Discard changes in results.json to avoid merge conflicts
+          git checkout -- results.json
           
-          # Checkout the main branch
-          git fetch origin main
-          git checkout main
+          # Pull the latest changes from main to avoid conflicts
+          git pull --rebase origin main
           
-          # Pull the latest changes from the main branch
-          git pull origin main
-          
-          # Apply the stashed changes
-          git stash pop
-          
-          # Ensure only leaderboard.md is committed
-          git add leaderboard.md
-          git diff --exit-code leaderboard.md || git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
-          
-          # Push the changes to the main branch
+          # Push the changes to main
           git push origin main
-
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
