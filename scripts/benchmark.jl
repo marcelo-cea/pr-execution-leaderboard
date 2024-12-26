@@ -2,7 +2,7 @@ using BenchmarkTools
 using JSON
 
 function my_function_to_benchmark()
-    for i in range(0,30,2)
+    for i in range(0,40,2)
         println("hola")
     end
 end
