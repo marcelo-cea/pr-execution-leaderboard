@@ -2,7 +2,7 @@ using BenchmarkTools
 using JSON
 
 function my_function_to_benchmark()
-    for i in 1:30
+    for i in 1:4
         println("hola")
     end
 end
