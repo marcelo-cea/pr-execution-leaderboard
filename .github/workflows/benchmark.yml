@@ -35,21 +35,22 @@ jobs:
           # Append the benchmark result to leaderboard.md
           echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> leaderboard.md
           
-          # Discard changes in unwanted files (e.g., results.json)
+          # Discard changes to other files to avoid conflicts
           git checkout -- results.json scripts/benchmark.jl
           
-          # Configure Git
+          # Configure Git for committing
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          # Stage and commit changes to leaderboard.md only
+          # Stage only leaderboard.md and commit it
           git add leaderboard.md
-          git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
+          git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark" || echo "No changes to commit"
           
-          # Pull the latest changes from main to avoid conflicts
-          git pull origin main --rebase --autostash
+          # Pull the latest changes from main with rebase
+          git fetch origin
+          git rebase origin/main || git rebase --abort
           
-          # Push the updated leaderboard.md
-          git push origin main
+          # Push the changes to the main branch
+          git push origin main || echo "No changes to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
