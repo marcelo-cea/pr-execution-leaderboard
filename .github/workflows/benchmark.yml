@@ -65,6 +65,10 @@ jobs:
             git commit -m "Resolve merge conflict in results.json"
           fi
           
+          # Ensure leaderboard.md is committed
+          git add leaderboard.md
+          git diff --exit-code leaderboard.md || git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
+          
           # Push the changes to the main branch
           git push origin main
 
