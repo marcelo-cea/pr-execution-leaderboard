@@ -38,6 +38,9 @@ jobs:
           # Append the benchmark result to the leaderboard.md
           echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> leaderboard.md
       
+          # Display the contents of leaderboard.md in the log
+          cat leaderboard.md
+          
           # Commit the updated leaderboard.md if it was modified
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
