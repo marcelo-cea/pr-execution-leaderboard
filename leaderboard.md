@@ -1,4 +1,4 @@
-# PR Execution Leaderboard
+## Benchmark Leaderboard
 
-| Rank | Contributor | Execution Time (seconds) |
-|------|-------------|--------------------------|
+| Pull Request | Benchmark Time (s) |
+|--------------|--------------------|
