@@ -26,9 +26,7 @@ jobs:
 
       - name: Commit leaderboard update
         run: |
-          # Install jq to parse JSON
-          sudo apt-get update && sudo apt-get install -y jq
-          
+        
           # Get the PR number from the GitHub context
           PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
 
