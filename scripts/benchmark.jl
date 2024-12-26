@@ -3,7 +3,7 @@ using JSON
 
 function my_function_to_benchmark()
     for i in 1:40
-        println("hola")
+        print("hola")
     end
 end
 
