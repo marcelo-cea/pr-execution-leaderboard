@@ -42,8 +42,14 @@ jobs:
           git add leaderboard.md
           git diff --exit-code leaderboard.md || git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
           
+          # Stash any uncommitted changes
+          git stash --include-untracked
+          
           # Pull the latest changes from the remote branch
           git pull --rebase origin $(jq -r '.pull_request.head.ref' "$GITHUB_EVENT_PATH")
+          
+          # Apply the stashed changes
+          git stash pop
           
           # Push the changes to the current branch
           git push origin HEAD:$(jq -r '.pull_request.head.ref' "$GITHUB_EVENT_PATH")
