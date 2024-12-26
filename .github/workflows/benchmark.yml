@@ -20,33 +20,29 @@ jobs:
         run: |
           julia -e 'using Pkg; Pkg.add("BenchmarkTools"); Pkg.add("JSON")'
 
-      - name: Run benchmarks
+      - name: Run benchmarks and update leaderboard
         run: |
-          julia -e 'using BenchmarkTools; include("scripts/benchmark.jl")'
-
-      - name: Commit leaderboard update
-        run: |
+          # Run benchmarks and extract the execution time
+          EXECUTION_TIME=$(julia -e 'using BenchmarkTools; \
+                                      using JSON; \
+                                      include("scripts/benchmark.jl"); \
+                                      println(JSON.print(Dict("time" => benchmark_result.time)))' | jq -r '.time')
+          
           # Get the PR number from the GitHub context
           PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
           
-          # Get the benchmark result from the JSON file
-          EXECUTION_TIME=$(jq -r '.benchmark_results[0].time' results.json)
-          
-          # Append the benchmark result to leaderboard.md
+          # Append the benchmark result to the leaderboard
           echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> leaderboard.md
-          
-          # Discard changes to other files to avoid conflicts
-          git checkout -- results.json scripts/benchmark.jl
           
           # Configure Git for committing
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          # Stage only leaderboard.md and commit it
+          # Commit the updated leaderboard.md
           git add leaderboard.md
           git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark" || echo "No changes to commit"
           
-          # Pull the latest changes from main with rebase
+          # Pull the latest changes from the main branch and rebase
           git fetch origin
           git rebase origin/main || git rebase --abort
           
@@ -54,3 +50,4 @@ jobs:
           git push origin main || echo "No changes to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
