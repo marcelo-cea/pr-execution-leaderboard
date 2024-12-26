@@ -57,15 +57,7 @@ jobs:
           # Apply the stashed changes
           git stash pop
           
-          # Resolve merge conflicts by accepting incoming changes
-          if git ls-files -u | grep -q results.json; then
-            echo "Merge conflict detected in results.json. Accepting incoming changes..."
-            git checkout --theirs results.json
-            git add results.json
-            git commit -m "Accept incoming changes for results.json"
-          fi
-          
-          # Ensure leaderboard.md is committed
+          # Ensure only leaderboard.md is committed
           git add leaderboard.md
           git diff --exit-code leaderboard.md || git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark"
           
