@@ -2,8 +2,8 @@ using BenchmarkTools
 using JSON
 
 function my_function_to_benchmark()
-    for i in 1:40
-        print("hola")
+    for i in 1:400
+        print("Cambio 1 (modo sergio)")
     end
 end
 
