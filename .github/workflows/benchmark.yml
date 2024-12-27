@@ -31,23 +31,27 @@ jobs:
           # Get the PR number from the GitHub context
           PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
           
-          # Append the benchmark result to the leaderboard
-          echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> leaderboard.md
+          # Ensure the docs directory exists and update the leaderboard
+          mkdir -p docs
+          echo "| PR #$PR_NUMBER | $EXECUTION_TIME |" >> docs/leaderboard.md
           
           # Configure Git for committing
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          # Commit the updated leaderboard.md
-          git add leaderboard.md
-          git commit -m "Update leaderboard with PR #$PR_NUMBER benchmark" || echo "No changes to commit"
-          
-          # Pull the latest changes from the main branch and rebase
+          # Ensure the docs branch exists
           git fetch origin
-          git rebase origin/main || git rebase --abort
+          if git show-ref --verify --quiet refs/remotes/origin/docs; then
+            git checkout docs
+          else
+            git checkout -b docs
+          fi
           
-          # Push the changes to the main branch
-          git push origin main || echo "No changes to push"
+          # Commit the updated docs/leaderboard.md
+          git add docs/leaderboard.md
+          git commit -m "Update docs/leaderboard.md with PR #$PR_NUMBER benchmark" || echo "No changes to commit"
+          
+          # Push the changes to the docs branch
+          git push origin docs || echo "No changes to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
